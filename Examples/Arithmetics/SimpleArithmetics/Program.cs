@@ -4,7 +4,7 @@ using RetroSharp;
 
 namespace SimpleArithmetics
 {
-    [CharacterSet("Consolas", 256)]
+    [CharacterSet("OEM437", 256)]
     [Characters(80, 32)]
     [ScreenBorder(30, 20)]
     class Program : RetroApplication

@@ -96,6 +96,7 @@
     <Compile Include="Networking\UPnP\DeviceDescriptionDocument.cs" />
     <Compile Include="Networking\UPnP\DeviceLocation.cs" />
     <Compile Include="Networking\UPnP\UPnPClient.cs" />
+    <Compile Include="OEM437.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="SpriteTexture.cs" />
     <Compile Include="EventArguments\ElapsedTimeEventArgs.cs" />

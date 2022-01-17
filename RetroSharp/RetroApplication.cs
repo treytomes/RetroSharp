@@ -463,31 +463,93 @@ namespace RetroSharp
 
 		private static void GenerateCharacterSetTextures()
 		{
-			Bitmap Temp = new Bitmap(1, 1);
-			Bitmap Bmp;
-			SizeF Size;
-			Font Font = new Font(fontName, visibleScreenHeight / consoleHeight, FontStyle.Regular, GraphicsUnit.Pixel);
-			SolidBrush White = new SolidBrush(Color.White);
-			string s;
-			int Width, Height;
-			int i;
+			if (fontName == "OEM437")
+			{
+				GenerateOEM437CharacterSetTextures();
+			}
+			else
+			{
+				GenerateStandardFontCharacterSetTextures();
+			}
+		}
+
+		private static void GenerateOEM437CharacterSetTextures()
+		{
+			characterSetTextures = new int[256];
+			characterSetSizes = new Size[256];
+
+			for (var ch = 0; ch < OEM437.DATA.Length; ch++)
+			{
+				var rows = new string[OEM437.CHAR_HEIGHT];
+
+				var charValue = OEM437.DATA[ch];
+				for (var y = 0; y < OEM437.CHAR_HEIGHT; y++)
+				{
+					for (var x = 0; x < OEM437.CHAR_WIDTH; x++, charValue >>= 1)
+					{
+						if ((charValue & 1) != 0)
+						{
+							rows[OEM437.CHAR_HEIGHT - y - 1] += "x";
+						}
+						else
+						{
+							rows[OEM437.CHAR_HEIGHT - y - 1] += " ";
+						}
+					}
+				}
+
+				CustomizeCharacter(ch, rows);
+			}
+
+			//var Temp = new Bitmap(1, 1);
+			//var Font = new Font(fontName, visibleScreenHeight / consoleHeight, FontStyle.Regular, GraphicsUnit.Pixel);
+			//var White = new SolidBrush(Color.White);
+
+			//using (var TempCanvas = Graphics.FromImage(Temp))
+			//{
+			//	for (var i = 0; i < characterSetSize; i++)
+			//	{
+			//		var s = new string((char)i, 1);
+
+			//		using (var Bmp = new Bitmap(OEM437.CHAR_WIDTH, OEM437.CHAR_HEIGHT, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+			//		{
+			//			using (var Canvas = Graphics.FromImage(Bmp))
+			//			{
+			//				Canvas.TextRenderingHint = TextRenderingHint.AntiAlias;     // Clear Type has too many strange effects.
+			//				Canvas.Clear(Color.Transparent);
+			//				Canvas.DrawString(s, Font, White, 0, 0);
+			//			}
+
+			//			DoCustomizeCharacter(i, Bmp, false);
+			//		}
+			//	}
+			//}
+
+			//Font.Dispose();
+		}
+
+		private static void GenerateStandardFontCharacterSetTextures()
+		{
+			var Temp = new Bitmap(1, 1);
+			var Font = new Font(fontName, visibleScreenHeight / consoleHeight, FontStyle.Regular, GraphicsUnit.Pixel);
+			var White = new SolidBrush(Color.White);
 
 			characterSetTextures = new int[characterSetSize];
 			characterSetSizes = new Size[characterSetSize];
 
-			using (Graphics TempCanvas = Graphics.FromImage(Temp))
+			using (var TempCanvas = Graphics.FromImage(Temp))
 			{
-				for (i = 0; i < characterSetSize; i++)
+				for (var i = 0; i < characterSetSize; i++)
 				{
-					s = new string((char)i, 1);
-					Size = TempCanvas.MeasureString(s, Font);
+					var s = new string((char)i, 1);
+					var Size = TempCanvas.MeasureString(s, Font);
 
-					Width = (int)Math.Ceiling(Size.Width);
-					Height = (int)Math.Ceiling(Size.Height);
+					var Width = (int)Math.Ceiling(Size.Width);
+					var Height = (int)Math.Ceiling(Size.Height);
 
-					using (Bmp = new Bitmap(Width, Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+					using (var Bmp = new Bitmap(Width, Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
 					{
-						using (Graphics Canvas = Graphics.FromImage(Bmp))
+						using (var Canvas = Graphics.FromImage(Bmp))
 						{
 							Canvas.TextRenderingHint = TextRenderingHint.AntiAlias;     // Clear Type has too many strange effects.
 							Canvas.Clear(Color.Transparent);
@@ -504,7 +566,6 @@ namespace RetroSharp
 
 		private static void DisposeCharacterSetTextures()
 		{
-
 			if (!(characterSetTextures is null))
 				GL.DeleteTextures(characterSetTextures.Length, characterSetTextures);
 		}
